@@ -5,10 +5,14 @@
 	"main": "./dist/esm.js",
 	"scripts": {
 		"build": "tsc",
-		"test:build": "esbuild src/index.ts --outfile=browser.js --bundle --minify --outfile=dist/esm.js"
+		"test:build": "esbuild test/browser.ts --outfile=test/browser.js --bundle --minify"
 	},
 	"devDependencies": {
 		"esbuild": "^0.18.6",
 		"typescript": "^5.1.3"
-	}
+	},
+	"files": [
+		"dist",
+		"package.json"
+	]
 }
