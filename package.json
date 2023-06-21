@@ -2,9 +2,12 @@
 	"name": "@maddsua/reveal",
 	"version": "3.0.0",
 	"description": "Transition library. Sort of.",
-	"main": "./dist/esm.js",
+	"main": "./dist/index.js",
+	"module": "./dist/index.js",
+	"types": "./dist/index.d.ts",
 	"scripts": {
 		"build": "tsc",
+		"deploy": "tsc && npm publish --access=public",
 		"test:build": "esbuild test/browser.ts --outfile=test/browser.js --bundle --minify"
 	},
 	"devDependencies": {
