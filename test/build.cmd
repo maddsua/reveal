@@ -1,0 +1,1 @@
+esbuild browser.ts --outfile=browser.js --bundle --watch
