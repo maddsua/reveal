@@ -8,6 +8,7 @@
 		"moduleResolution": "NodeNext"
 	},
 	"exclude": [
-		"test"
+		"test",
+		"dist"
 	]
 }
