@@ -10,13 +10,13 @@
 
 	data-rvl="[translate-in-em's] [direction] [order] [delay] [transitionTime]"
 	data-rvl="2em left 5 200ms"
-	data-rvl="t2 dl o5 dy200 d200"
+	data-rvl="t2 dl o5 dy200 tt200"
 
 
 	Example:
 
 	<div data-rvl-container="f25 b300 i50">
-		<img data-rvl="t2 dl o5 dy200" />
+		<img data-rvl="t2 dl o5 d200" />
 	</div>
 */
 
@@ -46,8 +46,6 @@ export const revealScript = (container?: HTMLElement) => {
 		}))
 	}));
 
-	console.log(sequences)
-
 	//	setup stuff
 	sequences.forEach(sequence => sequence.items.forEach(item => {
 
@@ -70,9 +68,8 @@ export const revealScript = (container?: HTMLElement) => {
 
 			const itemDelay = item.params.delay || sequence.params.itemDelay;
 			const itemOrder = item.params.order < 2 ? index : item.params.order;
-			console.log(itemDelay)
-			await sleep(itemOrder * itemDelay);
 
+			await sleep(itemOrder * itemDelay);
 			item.elem.style.transform = null;
 			item.elem.style.opacity = null;
 
@@ -94,6 +91,15 @@ export const revealScript = (container?: HTMLElement) => {
 
 	sequences.forEach(sequence => io.observe(sequence.container));
 
+	const styleDirectives = [
+		'html, body {overflow-x: hidden}',
+		'[data-rvl] { transition: all 250ms ease }'
+	];
+
+	const style = document.createElement('style');
+		style.id = 'reveral-v2-critical-styles';
+		style.innerHTML = styleDirectives.join('\n');
+	setTimeout(() => document.head.appendChild(style), 50);
 };
 
 export default revealScript;

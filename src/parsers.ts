@@ -47,7 +47,7 @@ export const parseRevealParams = (attribText: string | null) => {
 			return arg ? parseInt(arg) : 1;
 		})(),
 		delay: (() => {
-			const arg = directives?.match(/dy\d+/)?.[0]?.replace(/\D/g, '');
+			const arg = directives?.match(/d\d+/)?.[0]?.replace(/\D/g, '');
 			return arg ? parseInt(arg) : null;
 		})()
 	}
