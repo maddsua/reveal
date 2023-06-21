@@ -1,22 +1,22 @@
 /*
-	Prototype: data-reveal-container
+	Prototype: data-rvl-container
 
-	data-reveal-container="[trigger-on-fraction] [block-delay] [item-delay]"
-	data-reveal-container="0.25 300ms 50ms"
-	data-reveal-container="f25 b300 i50"
+	data-rvl-container="[trigger-on-fraction] [block-delay] [item-delay]"
+	data-rvl-container="0.25 300ms 50ms"
+	data-rvl-container="f25 b300 i50"
 
 
-	Prototype: data-reveal
+	Prototype: data-rvl
 
-	data-reveal="[translate-in-em's] [direction] [order] [delay]"
-	data-reveal="2em left 5 200ms"
-	data-reveal="t2 dl o5 d200"
+	data-rvl="[translate-in-em's] [direction] [order] [delay] [transitionTime]"
+	data-rvl="2em left 5 200ms"
+	data-rvl="t2 dl o5 dy200 d200"
 
 
 	Example:
 
-	<div data-reveal-container="f25 b300 i50">
-		<img data-reveal="t2 dl o5 dy200" />
+	<div data-rvl-container="f25 b300 i50">
+		<img data-rvl="t2 dl o5 dy200" />
 	</div>
 */
 
@@ -36,13 +36,13 @@ export const revealScript = (container?: HTMLElement) => {
 		return false;
 	}
 
-	const containers = (container || document).querySelectorAll('[data-reveal-container]');
+	const containers = (container || document).querySelectorAll('[data-rvl-ctn]');
 	const sequences = Array.from(containers).map((item): Sequence => ({
 		container: item as HTMLElement,
-		params: parseContainerParams(item.getAttribute('data-reveal-container')),
-		items: Array.from(item.querySelectorAll('[data-reveal]')).map(item => ({
+		params: parseContainerParams(item.getAttribute('data-rvl-ctn')),
+		items: Array.from(item.querySelectorAll('[data-rvl]')).map(item => ({
 			elem: item as HTMLElement,
-			params: parseRevealParams(item.getAttribute('data-reveal'))
+			params: parseRevealParams(item.getAttribute('data-rvl'))
 		}))
 	}));
 
@@ -73,8 +73,11 @@ export const revealScript = (container?: HTMLElement) => {
 			console.log(itemDelay)
 			await sleep(itemOrder * itemDelay);
 
-			item.elem.style.transform = '';
-			item.elem.style.opacity = '';
+			item.elem.style.transform = null;
+			item.elem.style.opacity = null;
+
+			await sleep(item.params.transitionDelay || 250);
+			item.elem.style.transition = null;
 		});
 	};
 	

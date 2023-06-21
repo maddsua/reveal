@@ -39,7 +39,7 @@ export const parseRevealParams = (attribText: string | null) => {
 			}[arg[1]] as Direction : 'y';
 		})(),
 		transitionDelay: (() => {
-			const arg = directives?.match(/td\d+/)?.[0]?.replace(/\D/g, '');
+			const arg = directives?.match(/tt\d+/)?.[0]?.replace(/\D/g, '');
 			return arg ? parseInt(arg) : undefined;
 		})(),
 		order: (() => {
