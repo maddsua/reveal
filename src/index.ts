@@ -56,17 +56,15 @@ export const revealScript = (container?: HTMLElement) => {
 
 	console.log(containers);
 
-	const hideElement = (elem: HTMLElement, params: RevealItemParams) => {
+	const hideElement = async (elem: HTMLElement, params: RevealItemParams) => {
 		
 		const dir = params.translate.direction.slice(-1);
 		const sign = params.translate.direction.length > 1 ? '-' : '';
 
 		elem.style.transform = `translate${dir}(${sign}${params.translate.amountEm}em)`;
 		elem.style.opacity = '0';
-		
-		if (params.delay) setTimeout(() => {
-			elem.style.transition = `all ${params.delay}ms ease`;
-		}, 50);
+		await sleep(50);
+		elem.style.transition = `all ${params.delay}ms ease`;
 	};
 
 	const showElement = async (elem: HTMLElement, params: RevealItemParams) => {
