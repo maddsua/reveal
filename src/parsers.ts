@@ -1,4 +1,45 @@
-import type { Direction } from "./types.js";
+import type { Direction, RevealItemParams } from "./types.js";
+
+export const parseUnifiedParams = (attribText: string | null): RevealItemParams => {
+
+	const directives = attribText?.toLowerCase();
+
+	return {
+		threshold: (() => {
+			const arg = directives?.match(/f\d+/)?.[0]?.replace(/\D/g, '');
+			return (arg ? parseInt(arg) : 25) / 100;
+		})(),
+		delay: (() => {
+			const arg = directives?.match(/b\d+/)?.[0]?.replace(/\D/g, '');
+			return arg ? parseInt(arg) : 350;
+		})(),
+		childDelay: (() => {
+			const arg = directives?.match(/i\d+/)?.[0]?.replace(/\D/g, '');
+			return arg ? parseInt(arg) : 50;
+		})(),
+		translate: (() => {
+			const arg = directives?.match(/t\d+/)?.[0]?.replace(/\D/g, '');
+			return arg ? parseInt(arg) : 2;
+		})(),
+		direction: (() => {
+			const arg = directives?.match(/d[rlbt]/)?.[0];
+			return arg ? {
+				't': '-y',
+				'b': 'y',
+				'l': '-x',
+				'r': 'x'
+			}[arg[1]] as Direction : 'y';
+		})(),
+		transitionDelay: (() => {
+			const arg = directives?.match(/tt\d+/)?.[0]?.replace(/\D/g, '');
+			return arg ? parseInt(arg) : undefined;
+		})(),
+		index: (() => {
+			const arg = directives?.match(/o\d+/)?.[0]?.replace(/\D/g, '');
+			return arg ? parseInt(arg) : 1;
+		})()
+	}
+} 
 
 export const parseContainerParams = (attribText: string | null) => {
 
