@@ -27,7 +27,7 @@ export interface Sequence {
 }
 
 export interface RevealItemParams {
-	threshold: number;				//	t25
+	threshold: number | undefined;	//	t25
 	childDelay: number;				//	cd250
 	delay: number;					//	d125
 	translate: Translate;			//	tl2
