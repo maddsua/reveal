@@ -1,6 +1,6 @@
-import type { Direction, RevealItemParams } from "./types.js";
+import type { Direction, RevealContainerParams } from "./types.js";
 
-export const parseUnifiedParams = (attribText: string | null): RevealItemParams => {
+export const parseUnifiedParams = (attribText: string | null): RevealContainerParams => {
 
 	const directives = attribText?.toLowerCase()?.split(' ');
 
@@ -10,14 +10,13 @@ export const parseUnifiedParams = (attribText: string | null): RevealItemParams 
 	const arg_delay = getArg(/^d\d+$/)?.slice(1);
 	const arg_childDelay = getArg(/^cd\d+$/)?.slice(2);
 	const arg_translate = getArg(/^t[rltb]\d*$/);
-	const arg_transitionDelay = getArg(/^td\d+$/)?.slice(2);
 	const arg_index = getArg(/^i\d+$/)?.slice(1);
 
 	const arg_translate_temp = arg_translate?.slice(2);
 
 	return {
 		threshold: arg_threshold ? (parseInt(arg_threshold) / 100) : undefined,
-		delay: arg_delay ? parseInt(arg_delay) : 350,
+		delay: arg_delay ? parseInt(arg_delay) : 250,
 		childDelay: arg_childDelay ? parseInt(arg_childDelay) : 50,
 		translate: {
 			amountEm: arg_translate_temp ? parseInt(arg_translate_temp) : 2,
@@ -28,7 +27,6 @@ export const parseUnifiedParams = (attribText: string | null): RevealItemParams 
 				'r': 'x'
 			}[arg_translate?.[2]] as Direction || 'y'
 		},
-		transitionDelay: arg_transitionDelay ? parseInt(arg_transitionDelay) : undefined,
 		index: arg_index ? parseInt(arg_index) : 1
 	}
 } 
