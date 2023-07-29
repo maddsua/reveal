@@ -6,40 +6,30 @@ export const parseUnifiedParams = (attribText: string | null): RevealItemParams 
 
 	const getArg = (expr: RegExp) => directives.find(item => expr.test(item));
 
+	const arg_threshold = getArg(/^t\d+$/)?.slice(1);
+	const arg_delay = getArg(/^d\d+$/)?.slice(1);
+	const arg_childDelay = getArg(/^cd\d+$/)?.slice(2);
+	const arg_translate = getArg(/^t[rltb]\d*$/);
+	const arg_transitionDelay = getArg(/^td\d+*$/)?.slice(2);
+	const arg_index = getArg(/^i\d+*$/)?.slice(1);
+
+	const arg_translate_temp = arg_translate?.slice(2);
+
 	return {
-		threshold: (() => {
-			const arg = getArg(/^t\d+$/)?.slice(1);
-			return (arg ? parseInt(arg) : 25) / 100;
-		})(),
-		delay: (() => {
-			const arg = getArg(/^d\d+$/)?.slice(1);
-			return arg ? parseInt(arg) : 350;
-		})(),
-		childDelay: (() => {
-			const arg = getArg(/^cd\d+$/)?.slice(2);
-			return arg ? parseInt(arg) : 50;
-		})(),
-		translate: (() => {
-			const arg = getArg(/^t[rltb]\d*$/);
-			const compNumeric = arg?.slice(2);
-			return {
-				amountEm: compNumeric ? parseInt(compNumeric) : 2,
-				direction: {
-					't': '-y',
-					'b': 'y',
-					'l': '-x',
-					'r': 'x'
-				}[arg[2]] as Direction || 'y'
-			};
-		})(),
-		transitionDelay: (() => {
-			const arg = getArg(/^td\d+*$/)?.slice(2);
-			return arg ? parseInt(arg) : undefined;
-		})(),
-		index: (() => {
-			const arg = getArg(/^i\d+*$/)?.slice(1);
-			return arg ? parseInt(arg) : 1;
-		})()
+		threshold: (arg_threshold ? parseInt(arg_threshold) : 25) / 100,
+		delay: arg_delay ? parseInt(arg_delay) : 350,
+		childDelay: arg_childDelay ? parseInt(arg_childDelay) : 50,
+		translate: {
+			amountEm: arg_translate_temp ? parseInt(arg_translate_temp) : 2,
+			direction: {
+				't': '-y',
+				'b': 'y',
+				'l': '-x',
+				'r': 'x'
+			}[arg_translate[2]] as Direction || 'y'
+		},
+		transitionDelay: arg_transitionDelay ? parseInt(arg_transitionDelay) : undefined,
+		index: arg_index ? parseInt(arg_index) : 1
 	}
 } 
 
