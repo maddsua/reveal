@@ -1,5 +1,10 @@
 export type Direction = '-x' | 'x' | '-y' | 'y';
 
+export interface Translate {
+	direction: Direction;
+	amountEm: number;
+};
+
 export interface RevealItem {
 	elem: HTMLElement;
 	params: {
@@ -22,11 +27,10 @@ export interface Sequence {
 }
 
 export interface RevealItemParams {
-	threshold: number;
-	childDelay: number;
-	delay: number;
-	translate: number;
-	direction: Direction;
-	transitionDelay: number;
-	index: number;
+	threshold: number;				//	t25
+	childDelay: number;				//	cd250
+	delay: number;					//	d125
+	translate: Translate;			//	tl2
+	transitionDelay: number;		//	td250
+	index: number;					//	i5
 };
