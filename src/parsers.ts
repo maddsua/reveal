@@ -17,7 +17,7 @@ export const parseUnifiedParams = (attribText: string | null): RevealContainerPa
 
 	return {
 		threshold: arg_threshold ? (parseInt(arg_threshold) / 100) : undefined,
-		delay: arg_anim_delay ? parseInt(arg_anim_delay) : 250,
+		delay: arg_anim_delay ? parseInt(arg_anim_delay) : 100,
 		length: arg_anim_length ? parseInt(arg_anim_length) : 250,
 		childDelay: arg_childDelay ? parseInt(arg_childDelay) : 50,
 		translate: {
