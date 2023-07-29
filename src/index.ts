@@ -20,8 +20,8 @@
 	</div>
 */
 
-import { parseContainerParams, parseRevealParams } from "./parsers.js";
-import type { Sequence } from "./types.js";
+import { parseUnifiedParams } from "./parsers.js";
+import type { RevealItemParams, Sequence } from "./types.js";
 
 const sleep = async (timeout: number) => new Promise(resolve => setTimeout(resolve, timeout));
 
@@ -36,29 +36,40 @@ export const revealScript = (container?: HTMLElement) => {
 		return false;
 	}
 
-	const containers = (container || document).querySelectorAll('[data-rvl-ctn]');
-	const sequences = Array.from(containers).map((item): Sequence => ({
-		container: item as HTMLElement,
-		params: parseContainerParams(item.getAttribute('data-rvl-ctn')),
-		items: Array.from(item.querySelectorAll('[data-rvl]')).map(item => ({
-			elem: item as HTMLElement,
-			params: parseRevealParams(item.getAttribute('data-rvl'))
-		}))
+	const revealItems = Array.from((container || document).querySelectorAll<HTMLElement>('[data-rvl]')).map(item => ({
+		element: item as HTMLElement,
+		params: parseUnifiedParams(item.getAttribute('data-rvl')),
 	}));
 
-	//	setup stuff
-	sequences.forEach(sequence => sequence.items.forEach(item => {
+	const containers = revealItems.filter(item => typeof item.params.threshold === 'number').map(item => Object.assign(item, {
+		items: revealItems.filter(item1 => item.element.contains(item1.element))
+	}));
 
-		const dir = item.params.direction[item.params.direction.length - 1];
-		const sign = item.params.direction.length > 1 ? '-' : '';
+	console.log(containers);
 
-		item.elem.style.transform = `translate${dir}(${sign}${item.params.translate}em)`;
-		item.elem.style.opacity = '0';
+	const hideElement = (element: HTMLElement, params: RevealItemParams) => {
 		
-		if (item.params.transitionDelay) setTimeout(() => {
-			item.elem.style.transition = `all ${item.params.transitionDelay}ms ease`;
+		const dir = params.translate.direction.slice(-1);
+		const sign = params.translate.direction.length > 1 ? '-' : '';
+
+		element.style.transform = `translate${dir}(${sign}${params.translate.amountEm}em)`;
+		element.style.opacity = '0';
+		
+		if (params.transitionDelay) setTimeout(() => {
+			element.style.transition = `all ${params.transitionDelay}ms ease`;
 		}, 50);
-	}));
+	};
+
+	containers.forEach(item => {
+		if (!item.items.length)
+			hideElement(item.element, item.params);
+		item.items?.forEach(item1 => hideElement(item1.element, item1.params));
+	});
+
+
+
+
+/*	
 
 	const revealSequence = async (sequence: Sequence) => {
 
@@ -99,7 +110,7 @@ export const revealScript = (container?: HTMLElement) => {
 	const style = document.createElement('style');
 		style.id = 'reveral-v2-critical-styles';
 		style.innerHTML = styleDirectives.join('\n');
-	setTimeout(() => document.head.appendChild(style), 50);
+	setTimeout(() => document.head.appendChild(style), 50);*/
 };
 
 export default revealScript;
