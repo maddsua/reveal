@@ -6,9 +6,10 @@ export interface Translate {
 };
 
 export type RevealItemParams = {
-	delay: number;					//	d125
-	translate: Translate;			//	tl2
-	index: number;					//	i5
+	delay: number;					//	d125 - animation delay
+	length: number;					//	l250 - animation length
+	translate: Translate;			//	tl2 - transform
+	index: number;					//	i5 - reveal order
 };
 
 export interface RevealItem {
