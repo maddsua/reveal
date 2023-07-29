@@ -21,17 +21,12 @@ export interface Sequence {
 	items: RevealItem[];
 }
 
-export type RevealContainterParams = {
-	containter: true;
+export interface RevealItemParams {
 	threshold: number;
-	delay: number;
 	childDelay: number;
-} | {};
-
-export type RevealItemParams = {
+	delay: number;
 	translate: number;
 	direction: Direction;
 	transitionDelay: number;
 	index: number;
-	delay: number;
-} & RevealContainterParams;
+};
