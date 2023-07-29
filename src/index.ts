@@ -64,13 +64,13 @@ export const revealScript = (container?: HTMLElement) => {
 		elem.style.transform = `translate${dir}(${sign}${params.translate.amountEm}em)`;
 		elem.style.opacity = '0';
 		await sleep(50);
-		elem.style.transition = `all ${params.delay}ms ease`;
+		elem.style.transition = `all ${params.length}ms ease`;
 	};
 
 	const showElement = async (elem: HTMLElement, params: RevealItemParams) => {
 		elem.style.transform = null;
 		elem.style.opacity = null;
-		await sleep(params.delay);
+		await sleep(params.length);
 		elem.style.transition = null;
 	};
 
