@@ -20,8 +20,7 @@ export interface RevealItem {
 export type RevealContainerParams = {
 	threshold: number | undefined;	//	t25
 	childDelay: number;				//	cd250
-	translate: Translate;			//	tl2
-	index: number;					//	i5
+	childLength: number;			//	cl250
 } & RevealItemParams;
 
 export interface RevealContainer {
