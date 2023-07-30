@@ -76,7 +76,7 @@ export const revealScript = (container?: HTMLElement) => {
 		elem.style.transition = null;
 	};
 
-	containers.forEach(item => {
+	containers.forEach(async (item) => {
 		if (!item.items.length)
 			hideElement(item.elem, item.params);
 		item.elem.setAttribute('data-role', 'container')
@@ -98,9 +98,10 @@ export const revealScript = (container?: HTMLElement) => {
 	const sequenceMap = new WeakMap(containers.map(item => ([item.elem, item])));
 
 	const io = new IntersectionObserver(entries => {
-		entries.forEach(entry => {
+		entries.forEach(async (entry) => {
 			const sequence = sequenceMap.get(entry.target as HTMLElement);
 			if (entry.intersectionRatio < sequence.params.threshold) return;
+			await sleep(sequence.params.delay);
 			sequence.items.length ? revealSequence(sequence) : showElement(sequence.elem, sequence.params);
 			io.unobserve(entry.target);
 		});
