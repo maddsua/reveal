@@ -37,7 +37,9 @@ export const revealScript = (container?: HTMLElement) => {
 	}
 
 	const styleDirectives = [
-		'html, body {overflow-x: hidden}'
+		'html, body {overflow-x: hidden}',
+		'* {box-sizing: border-box}',
+		'[data-rvl][data-role=container] {overflow: hidden}'
 	];
 
 	const style = document.createElement('style');
@@ -77,6 +79,7 @@ export const revealScript = (container?: HTMLElement) => {
 	containers.forEach(item => {
 		if (!item.items.length)
 			hideElement(item.elem, item.params);
+		item.elem.setAttribute('data-role', 'container')
 		item.items?.forEach(item1 => hideElement(item1.elem, item1.params));
 	});
 
