@@ -10,6 +10,7 @@ export const parseUnifiedParams = (attribText: string | null): RevealContainerPa
 	const arg_anim_delay = getArg(/^d\d+$/)?.slice(1);
 	const arg_anim_length = getArg(/^l\d+$/)?.slice(1);
 	const arg_childDelay = getArg(/^cd\d+$/)?.slice(2);
+	const arg_childLength = getArg(/^cl\d+$/)?.slice(2);
 	const arg_translate = getArg(/^t[rltb]\d*$/);
 	const arg_index = getArg(/^i\d+$/)?.slice(1);
 
@@ -20,6 +21,7 @@ export const parseUnifiedParams = (attribText: string | null): RevealContainerPa
 		delay: arg_anim_delay ? parseInt(arg_anim_delay) : 100,
 		length: arg_anim_length ? parseInt(arg_anim_length) : 250,
 		childDelay: arg_childDelay ? parseInt(arg_childDelay) : 50,
+		childLength: arg_childLength ? parseInt(arg_childLength) : 250,
 		translate: {
 			amountEm: arg_translate_temp ? parseInt(arg_translate_temp) : 2,
 			direction: {
