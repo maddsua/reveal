@@ -27,7 +27,7 @@ export const parseUnifiedParams = (attribText: string | null): RevealContainerPa
 				'b': 'y',
 				'l': '-x',
 				'r': 'x'
-			}[arg_translate?.[2]] as Direction || 'y'
+			}[arg_translate?.[1]] as Direction || 'y'
 		},
 		index: arg_index ? parseInt(arg_index) : 1
 	}
