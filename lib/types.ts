@@ -1,4 +1,4 @@
-export type Direction = '-x' | 'x' | '-y' | 'y';
+export type Direction = 'x' | '-x' | 'y' | '-y';
 
 export interface Translate {
 	direction: Direction;
