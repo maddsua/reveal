@@ -8,6 +8,7 @@
 	"scripts": {
 		"build": "tsc",
 		"deploy": "tsc && npm publish --access=public",
+		"dev": "esbuild test/browser.ts --outfile=test/browser.js --bundle --watch",
 		"test:build": "esbuild test/browser.ts --outfile=test/browser.js --bundle --minify"
 	},
 	"devDependencies": {
