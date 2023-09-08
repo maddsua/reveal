@@ -52,14 +52,14 @@ export default (attribute: string | null): RevealItemOptions => {
 			index: parseInt(getArg(/^i\d+$/)?.slice(1) as string)
 		},
 		childParams: {
-			threshold: parseInt(getArg(/^ct\d+$/)?.slice(1) as string),
-			delay: parseInt(getArg(/^cd\d+$/)?.slice(1) as string),
-			length: parseInt(getArg(/^cl\d+$/)?.slice(1) as string),
+			threshold: parseInt(getArg(/^ct\d+$/)?.slice(2) as string),
+			delay: parseInt(getArg(/^cd\d+$/)?.slice(2) as string),
+			length: parseInt(getArg(/^cl\d+$/)?.slice(2) as string),
 			translate: (() => {
 				const arg_translate = getArg(/^ct[rltb]\d*$/);
 				return {
-					amountEm: parseInt(arg_translate?.slice(2) as string),
-					direction: translateDirectionMap[arg_translate?.[1] || 'b']
+					amountEm: parseInt(arg_translate?.slice(3) as string),
+					direction: translateDirectionMap[arg_translate?.[2] || 'b']
 				}
 			})(),
 			index: 0
