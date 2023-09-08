@@ -1,6 +1,6 @@
 import attributeParser from '../lib/attributeParser';
 
-const attribute = 'ct18';
+const attribute = 't1 tr1 d1 l1 i1 ct1 ctr1 cd1 cl1 ci1';
 
 const result = attributeParser(attribute)
 
