@@ -13,9 +13,12 @@ export interface RevealParams {
 	index: number;				//	i5 - reveal order
 };
 
-export interface RevealItem {
-	elem: HTMLElement;
+export interface RevealItemOptions {
 	params: RevealParams;
-	childElements: HTMLElement[];
 	childParams: RevealParams;
+}
+
+export interface RevealItem extends RevealItemOptions {
+	elem: HTMLElement;
+	childElements: HTMLElement[];
 };
