@@ -15,18 +15,18 @@ export default (attribute: string | null): RevealItemOptions => {
 			delay: 125,
 			length: 250,
 			translate: {
-				direction: '-x',
+				direction: 'x',
 				amountEm: 2
 			},
 			index: 0
 		},
 		childParams: {
-			threshold: 25,
-			delay: 250,
-			length: 250,
+			threshold: 0,
+			delay: 0,
+			length: 0,
 			translate: {
-				direction: '-x',
-				amountEm: 2
+				direction: 'x',
+				amountEm: 0
 			},
 			index: 0
 		}
