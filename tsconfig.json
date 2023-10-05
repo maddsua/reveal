@@ -6,7 +6,8 @@
 		"outDir": "dist",
 		"declaration": true,
 		"strictNullChecks": true,
-		"moduleResolution": "NodeNext"
+		"module": "ESNext",
+		"moduleResolution": "Bundler"
 	},
 	"exclude": [
 		"test",
