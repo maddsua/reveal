@@ -22,7 +22,7 @@
 
 import attributeParser from "./attributeParser";
 
-import type { RevealItem, ParentRavealElement } from "./types";
+import type { RevealItem, ParentRavealElement, Direction } from "./types";
 
 const asyncSleep = async (timeout: number) => new Promise(resolve => setTimeout(resolve, timeout));
 
@@ -61,15 +61,15 @@ export const revealScript = (container?: HTMLElement) => {
 		return { elem: item, params, childParams } as RevealItem;
 	});
 
-	revealItems.forEach(async (item) => {
-		const dir = item.params.translate.direction.slice(-1);
-		const sign = item.params.translate.direction.length > 1 ? '-' : '';
+	const hideElement = async (elem: HTMLElement, trDirect: Direction, trAmount: number, animLen: number) => {
+		const dir = trDirect.slice(-1);
+		const sign = trDirect.length > 1 ? '-' : '';
 
-		item.elem.style.transform = `translate${dir}(${sign}${item.params.translate.amountEm}em)`;
-		item.elem.style.opacity = '0';
-		await asyncSleep(50);
-		item.elem.style.transition = `all ${item.params.length}ms ease`;
-	});
+		elem.style.transform = `translate${dir}(${sign}${trAmount}em)`;
+		elem.style.opacity = '0';
+		await asyncSleep(10);
+		elem.style.transition = `all ${animLen}ms ease`;
+	};
 
 	const childElements = Array.from(document.querySelectorAll<HTMLElement>('[data-rvl] [data-rvl]'));
 	const childItems = revealItems.filter(parent => childElements.some(child => child === parent.elem));
@@ -79,6 +79,21 @@ export const revealScript = (container?: HTMLElement) => {
 		childParams: parent.childParams,
 		children: childItems.filter(child => parent.elem.contains(child.elem))
 	}));
+
+	parentItems.forEach(parent => {
+
+		const { direction, amountEm } = parent.params.translate;
+		hideElement(parent.elem, direction, amountEm, parent.params.length);
+
+		parent.children.forEach(child => {
+
+			const direction = (parent.childParams.translate.direction === 'x' ? null : parent.childParams.translate.direction) || child.params.translate.direction;
+			const amountEm = parent.childParams.translate.amountEm || child.params.translate.amountEm;
+			const length = parent.childParams.length || child.params.length;
+
+			hideElement(child.elem, direction, amountEm, length);
+		});
+	});
 
 	const sequenceMap = new WeakMap(parentItems.map(item => ([item.elem, item])));
 
@@ -92,7 +107,7 @@ export const revealScript = (container?: HTMLElement) => {
 	const revealSequence = async (sequence: ParentRavealElement) => {
 
 		sequence.children.forEach(async (item, index) => {
-			const itemDelay = item.params.delay || sequence.childParams.delay;
+			const itemDelay = sequence.childParams.delay || item.params.delay;
 			const itemOrder = item.params.index < 2 ? index : item.params.index;			
 			await asyncSleep(itemOrder * itemDelay);
 			await showElement(item);
