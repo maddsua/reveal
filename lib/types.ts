@@ -13,9 +13,17 @@ export interface RevealParams {
 	index: number;				//	i5 - reveal order
 };
 
+export interface ChildTranslate extends Omit<Translate, 'direction'> {
+	direction: Direction | null;
+};
+
+export interface ChildRevealParams extends Omit<RevealParams, 'translate'> {
+	translate: ChildTranslate;
+};
+
 export interface RevealItemOptions {
 	params: RevealParams;
-	childParams: RevealParams;
+	childParams: ChildRevealParams;
 }
 
 export interface RevealItem extends RevealItemOptions {

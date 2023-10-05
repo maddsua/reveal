@@ -25,7 +25,7 @@ export default (attribute: string | null): RevealItemOptions => {
 			delay: 0,
 			length: 0,
 			translate: {
-				direction: 'x',
+				direction: null,
 				amountEm: 0
 			},
 			index: 0

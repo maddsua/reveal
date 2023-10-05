@@ -87,7 +87,7 @@ export const revealScript = (container?: HTMLElement) => {
 
 		parent.children.forEach(child => {
 
-			const direction = (parent.childParams.translate.direction === 'x' ? null : parent.childParams.translate.direction) || child.params.translate.direction;
+			const direction = parent.childParams.translate.direction || child.params.translate.direction;
 			const amountEm = parent.childParams.translate.amountEm || child.params.translate.amountEm;
 			const length = parent.childParams.length || child.params.length;
 
