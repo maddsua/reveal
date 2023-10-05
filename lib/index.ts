@@ -22,7 +22,7 @@
 
 import attributeParser from "./attributeParser";
 
-import type { RevealItem } from "./types";
+import type { RevealItem, ParentRavealElement } from "./types";
 
 const asyncSleep = async (timeout: number) => new Promise(resolve => setTimeout(resolve, timeout));
 
@@ -72,8 +72,13 @@ export const revealScript = (container?: HTMLElement) => {
 	});
 
 	const childElements = Array.from(document.querySelectorAll<HTMLElement>('[data-rvl] [data-rvl]'));
-	const parentItems = revealItems.filter(parent => !childElements.some(child => child === parent.elem));
 	const childItems = revealItems.filter(parent => childElements.some(child => child === parent.elem));
+	const parentItems: ParentRavealElement[] = revealItems.filter(parent => !childElements.some(child => child === parent.elem)).map(parent => ({
+		elem: parent.elem,
+		params: parent.params,
+		childParams: parent.childParams,
+		children: childItems.filter(child => parent.elem.contains(child.elem))
+	}));
 
 	const sequenceMap = new WeakMap(parentItems.map(item => ([item.elem, item])));
 
@@ -84,10 +89,10 @@ export const revealScript = (container?: HTMLElement) => {
 		item.elem.style.transition = '';
 	};
 
-	const revealSequence = async (sequence: RevealItem[], parentItem: RevealItem) => {
+	const revealSequence = async (sequence: ParentRavealElement) => {
 
-		sequence.forEach(async (item, index) => {
-			const itemDelay = item.params.delay || parentItem.childParams.delay;
+		sequence.children.forEach(async (item, index) => {
+			const itemDelay = item.params.delay || sequence.childParams.delay;
 			const itemOrder = item.params.index < 2 ? index : item.params.index;			
 			await asyncSleep(itemOrder * itemDelay);
 			await showElement(item);
@@ -98,14 +103,14 @@ export const revealScript = (container?: HTMLElement) => {
 
 		entries.forEach(async (ioEntry) => {
 
-			const item = sequenceMap.get(ioEntry.target as HTMLElement) as RevealItem;
-			if ((ioEntry.intersectionRatio * 100) < item.params.threshold) return;
+			const sequence = sequenceMap.get(ioEntry.target as HTMLElement) as ParentRavealElement;
+			if ((ioEntry.intersectionRatio * 100) < sequence.params.threshold) return;
 			
-			await asyncSleep(item.params.delay);
+			await asyncSleep(sequence.params.delay);
 
-			revealSequence(childItems.filter(item1 => item.elem.contains(item1.elem)), item);
+			revealSequence(sequence);
 
-			await showElement(item);
+			await showElement(sequence);
 
 			io.unobserve(ioEntry.target);
 
