@@ -32,8 +32,7 @@ const injectStyles = () => {
 
 	const styleDirectives = [
 		'html, body {overflow-x: hidden}',
-		'* {box-sizing: border-box}',
-		'[data-rvl][data-role=container] {overflow: hidden}'
+		'* {box-sizing: border-box}'
 	];
 
 	const style = document.createElement('style');
@@ -72,7 +71,9 @@ export const revealScript = (container?: HTMLElement) => {
 		item.elem.style.opacity = '0';
 		await asyncSleep(50);
 		item.elem.style.transition = `all ${item.params.length}ms ease`;
-	})
+	});
+
+	console.log(revealItems);
 
 /*
 	const containers = revealItems.filter(item => typeof item.params.threshold === 'number').map(item => Object.assign(item, {
