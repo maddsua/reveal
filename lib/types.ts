@@ -20,5 +20,4 @@ export interface RevealItemOptions {
 
 export interface RevealItem extends RevealItemOptions {
 	elem: HTMLElement;
-	childElements: HTMLElement[];
 };

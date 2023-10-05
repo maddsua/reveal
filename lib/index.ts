@@ -22,6 +22,8 @@
 
 import attributeParser from "./attributeParser";
 
+import type { RevealItem } from "./types";
+
 const asyncSleep = async (timeout: number) => new Promise(resolve => setTimeout(resolve, timeout));
 
 const injectStyles = () => {
@@ -56,11 +58,7 @@ export const revealScript = (container?: HTMLElement) => {
 
 	const revealItems = Array.from((container || document).querySelectorAll<HTMLElement>('[data-rvl]')).map(item => {
 		const { params, childParams } = attributeParser(item.getAttribute('data-rvl'));
-		return {
-			elem: item,
-			params,
-			childParams
-		};
+		return { elem: item, params, childParams } as RevealItem;
 	});
 
 	revealItems.forEach(async (item) => {
@@ -73,66 +71,50 @@ export const revealScript = (container?: HTMLElement) => {
 		item.elem.style.transition = `all ${item.params.length}ms ease`;
 	});
 
-	console.log(revealItems);
+	const childElements = Array.from(document.querySelectorAll<HTMLElement>('[data-rvl] [data-rvl]'));
+	const parentItems = revealItems.filter(parent => !childElements.some(child => child === parent.elem));
+	const childItems = revealItems.filter(parent => childElements.some(child => child === parent.elem));
 
-/*
-	const containers = revealItems.filter(item => typeof item.params.threshold === 'number').map(item => Object.assign(item, {
-		items: revealItems.filter(item1 => item.elem.contains(item1.elem)).filter(item1 => item.elem != item1.elem)
-	})) as RevealContainer[];
+	const sequenceMap = new WeakMap(parentItems.map(item => ([item.elem, item])));
 
-	console.log(containers);
-
-	const hideElement = async (elem: HTMLElement, params: RevealItemParams) => {
-		
-		const dir = params.translate.direction.slice(-1);
-		const sign = params.translate.direction.length > 1 ? '-' : '';
-
-		elem.style.transform = `translate${dir}(${sign}${params.translate.amountEm}em)`;
-		elem.style.opacity = '0';
-		await asyncSleep(50);
-		elem.style.transition = `all ${params.length}ms ease`;
+	const showElement = async (item: RevealItem) => {
+		item.elem.style.transform = '';
+		item.elem.style.opacity = '';
+		await asyncSleep(item.params.length);
+		item.elem.style.transition = '';
 	};
 
-	const showElement = async (elem: HTMLElement, params: RevealItemParams) => {
-		elem.style.transform = null;
-		elem.style.opacity = null;
-		await asyncSleep(params.length);
-		elem.style.transition = null;
-	};
+	const revealSequence = async (sequence: RevealItem[], parentItem: RevealItem) => {
 
-	containers.forEach(async (item) => {
-		if (!item.items.length)
-			hideElement(item.elem, item.params);
-		item.elem.setAttribute('data-role', 'container')
-		item.items?.forEach(item1 => hideElement(item1.elem, item1.params));
-	});
-
-	const revealSequence = async (sequence: RevealContainer) => {
-
-		await asyncSleep(sequence.params.delay);
-
-		sequence.items.forEach(async (item, index) => {
-			const itemDelay = item.params.delay || sequence.params.childDelay;
+		sequence.forEach(async (item, index) => {
+			const itemDelay = item.params.delay || parentItem.childParams.delay;
 			const itemOrder = item.params.index < 2 ? index : item.params.index;			
 			await asyncSleep(itemOrder * itemDelay);
-			await showElement(item.elem, item.params);
+			await showElement(item);
 		});
 	};
 
-	const sequenceMap = new WeakMap(containers.map(item => ([item.elem, item])));
-
 	const io = new IntersectionObserver(entries => {
-		entries.forEach(async (entry) => {
-			const sequence = sequenceMap.get(entry.target as HTMLElement);
-			if (entry.intersectionRatio < sequence.params.threshold) return;
-			await asyncSleep(sequence.params.delay);
-			sequence.items.length ? revealSequence(sequence) : showElement(sequence.elem, sequence.params);
-			io.unobserve(entry.target);
+
+		entries.forEach(async (ioEntry) => {
+
+			const item = sequenceMap.get(ioEntry.target as HTMLElement) as RevealItem;
+			if ((ioEntry.intersectionRatio * 100) < item.params.threshold) return;
+			
+			await asyncSleep(item.params.delay);
+
+			revealSequence(childItems.filter(item1 => item.elem.contains(item1.elem)), item);
+
+			await showElement(item);
+
+			io.unobserve(ioEntry.target);
+
 		});
+
 	}, { threshold: (Array.apply(0, Array(21)) as any[]).map((_item, index) => index * 0.05) });
 
-	containers.forEach(sequence => io.observe(sequence.elem));
-*/
+	parentItems.forEach(item => io.observe(item.elem));
+
 };
 
 export default revealScript;
