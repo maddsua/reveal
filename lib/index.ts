@@ -43,7 +43,7 @@ const injectStyles = () => {
 	document.head.appendChild(style)
 };
 
-export const revealScript = (container?: HTMLElement) => {
+export const revealInit = (container?: HTMLElement) => {
 
 	if (!IntersectionObserver) {
 		console.warn('IntersectionObserver not supported. Aborting.')
@@ -137,4 +137,4 @@ export const revealScript = (container?: HTMLElement) => {
 
 };
 
-export default revealScript;
+export default revealInit;

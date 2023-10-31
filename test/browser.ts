@@ -1,3 +1,3 @@
-import revealScript from "../lib/index";
+import revealInit from "../lib/index";
 
-revealScript();
+revealInit();

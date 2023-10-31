@@ -1,7 +1,7 @@
 {
 	"type": "module",
 	"name": "@maddsua/reveal",
-	"version": "4.0.2",
+	"version": "4.1.0",
 	"description": "Transitions library. Sort of.",
 	"main": "./dist/index.js",
 	"module": "./dist/index.js",
