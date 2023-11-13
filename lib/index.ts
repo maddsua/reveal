@@ -35,6 +35,7 @@ export const revealInit = (container?: HTMLElement) => {
 		const params = mergeNonNullish(defaultElementParams, item.attributeParser.parse());
 
 		const inheritParams = mergeNonNullish(defaultElementParams, item.attributeParser.parseChildren());
+
 		const children = childrenItems.map(item => ({
 			elem: item.element,
 			params: mergeNonNullish(inheritParams, item.attributeParser.parse())
@@ -47,8 +48,6 @@ export const revealInit = (container?: HTMLElement) => {
 			children
 		};
 	});
-
-	console.log(parentItems);
 
 	//	self explanatory
 	const hideElement = async (elem: HTMLElement, translate: Translate, animLen: number) => {
