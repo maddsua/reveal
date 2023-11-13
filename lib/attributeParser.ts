@@ -1,4 +1,4 @@
-import { Direction, RevealItemOptions } from './types';
+import type { Direction, RevealItemOptions, RevealParams } from './types';
 
 const translateDirectionMap: Record<string, Direction> = {
 	't': '-y',
@@ -7,20 +7,23 @@ const translateDirectionMap: Record<string, Direction> = {
 	'r': 'x'
 };
 
+export const defaultElementParams: RevealParams = {
+	threshold: 25,
+	delay: 125,
+	length: 250,
+	translate: {
+		direction: 'x',
+		amountEm: 2
+	},
+	index: 0
+};
+
+
 export default (attribute: string | null): RevealItemOptions => {
 
 	const defaultOptions: RevealItemOptions = {
-		params: {
-			threshold: 25,
-			delay: 125,
-			length: 250,
-			translate: {
-				direction: 'x',
-				amountEm: 2
-			},
-			index: 0
-		},
-		childParams: {
+		params: defaultElementParams,
+		inheritParams: {
 			threshold: 0,
 			delay: 0,
 			length: 0,
@@ -51,7 +54,7 @@ export default (attribute: string | null): RevealItemOptions => {
 			})(),
 			index: parseInt(getArg(/^i\d+$/)?.slice(1) as string)
 		},
-		childParams: {
+		inheritParams: {
 			threshold: parseInt(getArg(/^ct\d+$/)?.slice(2) as string),
 			delay: parseInt(getArg(/^cd\d+$/)?.slice(2) as string),
 			length: parseInt(getArg(/^cl\d+$/)?.slice(2) as string),
@@ -85,7 +88,7 @@ export default (attribute: string | null): RevealItemOptions => {
 	};
 
 	mergeIfUpdated(defaultOptions.params, providedOptions.params);
-	mergeIfUpdated(defaultOptions.childParams, providedOptions.childParams);
+	mergeIfUpdated(defaultOptions.inheritParams, providedOptions.inheritParams);
 
 	return defaultOptions;
 };
