@@ -11,7 +11,6 @@ export const defaultElementParams: RevealParams = {
 	threshold: 25,
 	delay: 125,
 	length: 250,
-	translate: null,
 	index: 0
 };
 
