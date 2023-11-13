@@ -70,9 +70,10 @@ export const revealInit = (container?: HTMLElement) => {
 		elem.style.transition = `all ${animLen}ms ease`;
 	};
 
-	const childElements = Array.from(document.querySelectorAll<HTMLElement>('[data-rvl] [data-rvl]'));
-	const childItems = revealItems.filter(parent => childElements.some(child => child === parent.elem));
-	const parentItems: ParentRavealElement[] = revealItems.filter(parent => !childElements.some(child => child === parent.elem)).map(parent => ({
+	const childElementsSet = new Set(Array.from(document.querySelectorAll<HTMLElement>('[data-rvl] [data-rvl]')));
+	const childItems = revealItems.filter(parent => childElementsSet.has(parent.elem));
+	console.log(childItems);
+	const parentItems: ParentRavealElement[] = revealItems.filter(parent => !childElementsSet.has(parent.elem)).map(parent => ({
 		elem: parent.elem,
 		params: parent.params,
 		inheritParams: parent.inheritParams,
