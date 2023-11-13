@@ -12,7 +12,7 @@ export const defaultElementParams: RevealParams = {
 	delay: 125,
 	length: 250,
 	translate: {
-		direction: 'x',
+		direction: 'y',
 		amountEm: 2
 	},
 	index: 0
@@ -35,11 +35,12 @@ export class AttributeParser {
 		const arg = this.getArg(expr);
 		if (!arg) return undefined;
 
-		const numval = parseInt(arg.slice(arg.startsWith('c') ? 3 : 2));
+		const isCp = arg.startsWith('c');
+		const numval = parseInt(arg.slice(isCp ? 3 : 2));
 
 		return {
 			amountEm: isNaN(numval) ? undefined : numval,
-			direction: translateDirectionMap[arg?.[1]]
+			direction: translateDirectionMap[isCp ? arg[2] : arg[1]]
 		};
 	}
 
