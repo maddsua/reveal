@@ -1,3 +1,4 @@
+import { mergeIfUpdated, deepClone } from './objects';
 import type { Direction, RevealItemOptions, RevealParams } from './types';
 
 const translateDirectionMap: Record<string, Direction> = {
@@ -18,11 +19,10 @@ export const defaultElementParams: RevealParams = {
 	index: 0
 };
 
-
 export default (attribute: string | null): RevealItemOptions => {
 
-	const defaultOptions: RevealItemOptions = {
-		params: defaultElementParams,
+	const applyOptions: RevealItemOptions = {
+		params: deepClone(defaultElementParams),
 		inheritParams: {
 			threshold: 0,
 			delay: 0,
@@ -36,7 +36,7 @@ export default (attribute: string | null): RevealItemOptions => {
 	};
 
 	const directives = attribute?.toLowerCase()?.split(' ');
-	if (!directives?.length) return defaultOptions;
+	if (!directives?.length) return applyOptions;
 
 	const getArg = (expr: RegExp) => directives.find(item => expr.test(item));
 
@@ -69,26 +69,8 @@ export default (attribute: string | null): RevealItemOptions => {
 		}
 	};
 
-	const mergeIfUpdated = (target: object, mutation: object) => {
+	mergeIfUpdated(applyOptions.params, providedOptions.params);
+	mergeIfUpdated(applyOptions.inheritParams, providedOptions.inheritParams);
 
-		for (let prop in mutation) {
-
-			const next = mutation[prop];
-
-			if (typeof next === 'number' && isNaN(next))
-				continue;
-			else if (typeof next === 'string' && !next?.length)
-				continue;
-			else if (next === null)
-				continue;
-			else if (typeof next === 'object' && !Array.isArray(next))
-				mergeIfUpdated(target[prop], next);
-			else target[prop] = next;
-		}
-	};
-
-	mergeIfUpdated(defaultOptions.params, providedOptions.params);
-	mergeIfUpdated(defaultOptions.inheritParams, providedOptions.inheritParams);
-
-	return defaultOptions;
+	return applyOptions;
 };
