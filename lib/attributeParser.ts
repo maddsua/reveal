@@ -1,4 +1,5 @@
-import { Direction, RevealItemOptions } from './types';
+import { mergeIfUpdated, deepClone } from './objects';
+import type { Direction, RevealItemOptions, RevealParams } from './types';
 
 const translateDirectionMap: Record<string, Direction> = {
 	't': '-y',
@@ -7,20 +8,22 @@ const translateDirectionMap: Record<string, Direction> = {
 	'r': 'x'
 };
 
+export const defaultElementParams: RevealParams = {
+	threshold: 25,
+	delay: 125,
+	length: 250,
+	translate: {
+		direction: 'x',
+		amountEm: 2
+	},
+	index: 0
+};
+
 export default (attribute: string | null): RevealItemOptions => {
 
-	const defaultOptions: RevealItemOptions = {
-		params: {
-			threshold: 25,
-			delay: 125,
-			length: 250,
-			translate: {
-				direction: 'x',
-				amountEm: 2
-			},
-			index: 0
-		},
-		childParams: {
+	const applyOptions: RevealItemOptions = {
+		params: deepClone(defaultElementParams),
+		inheritParams: {
 			threshold: 0,
 			delay: 0,
 			length: 0,
@@ -33,7 +36,7 @@ export default (attribute: string | null): RevealItemOptions => {
 	};
 
 	const directives = attribute?.toLowerCase()?.split(' ');
-	if (!directives?.length) return defaultOptions;
+	if (!directives?.length) return applyOptions;
 
 	const getArg = (expr: RegExp) => directives.find(item => expr.test(item));
 
@@ -51,7 +54,7 @@ export default (attribute: string | null): RevealItemOptions => {
 			})(),
 			index: parseInt(getArg(/^i\d+$/)?.slice(1) as string)
 		},
-		childParams: {
+		inheritParams: {
 			threshold: parseInt(getArg(/^ct\d+$/)?.slice(2) as string),
 			delay: parseInt(getArg(/^cd\d+$/)?.slice(2) as string),
 			length: parseInt(getArg(/^cl\d+$/)?.slice(2) as string),
@@ -66,26 +69,8 @@ export default (attribute: string | null): RevealItemOptions => {
 		}
 	};
 
-	const mergeIfUpdated = (target: object, mutation: object) => {
+	mergeIfUpdated(applyOptions.params, providedOptions.params);
+	mergeIfUpdated(applyOptions.inheritParams, providedOptions.inheritParams);
 
-		for (let prop in mutation) {
-
-			const next = mutation[prop];
-
-			if (typeof next === 'number' && isNaN(next))
-				continue;
-			else if (typeof next === 'string' && !next?.length)
-				continue;
-			else if (next === null)
-				continue;
-			else if (typeof next === 'object' && !Array.isArray(next))
-				mergeIfUpdated(target[prop], next);
-			else target[prop] = next;
-		}
-	};
-
-	mergeIfUpdated(defaultOptions.params, providedOptions.params);
-	mergeIfUpdated(defaultOptions.childParams, providedOptions.childParams);
-
-	return defaultOptions;
+	return applyOptions;
 };

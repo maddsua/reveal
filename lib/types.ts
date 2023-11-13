@@ -23,7 +23,7 @@ export interface ChildRevealParams extends Omit<RevealParams, 'translate'> {
 
 export interface RevealItemOptions {
 	params: RevealParams;
-	childParams: ChildRevealParams;
+	inheritParams: ChildRevealParams;
 }
 
 export interface RevealItem extends RevealItemOptions {
