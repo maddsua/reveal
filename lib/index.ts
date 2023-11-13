@@ -50,12 +50,14 @@ export const revealInit = (container?: HTMLElement) => {
 	});
 
 	//	self explanatory
-	const hideElement = async (elem: HTMLElement, translate: Translate, animLen: number) => {
+	const hideElement = async (elem: HTMLElement, translate: Translate | null, animLen: number) => {
 
-		const dir = translate.direction.slice(-1);
-		const sign = translate.direction.length > 1 ? '-' : '';
+		if (translate) {
+			const dir = translate.direction.slice(-1);
+			const sign = translate.direction.length > 1 ? '-' : '';
+			elem.style.transform = `translate${dir}(${sign}${translate.amountEm}em)`;
+		}
 
-		elem.style.transform = `translate${dir}(${sign}${translate.amountEm}em)`;
 		elem.style.opacity = '0';
 		await asyncSleep(10);
 		elem.style.transition = `all ${animLen}ms ease`;
