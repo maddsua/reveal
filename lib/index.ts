@@ -50,7 +50,7 @@ export const revealInit = (container?: HTMLElement) => {
 	});
 
 	//	self explanatory
-	const hideElement = async (elem: HTMLElement, translate: Translate | null, animLen: number) => {
+	const hideElement = async (elem: HTMLElement, animLength: number, translate?: Translate) => {
 
 		if (translate) {
 			const dir = translate.direction.slice(-1);
@@ -60,13 +60,13 @@ export const revealInit = (container?: HTMLElement) => {
 
 		elem.style.opacity = '0';
 		await asyncSleep(10);
-		elem.style.transition = `all ${animLen}ms ease`;
+		elem.style.transition = `all ${animLength}ms ease`;
 	};
 
 	parentItems.forEach(item => {
-		hideElement(item.elem, item.params.translate, item.params.length);
+		hideElement(item.elem, item.params.length, item.params.translate);
 		item.children.forEach(child => {
-			hideElement(child.elem, child.params.translate, child.params.length);
+			hideElement(child.elem, child.params.length, child.params.translate);
 		});
 	});
 
