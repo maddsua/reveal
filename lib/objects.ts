@@ -1,38 +1,37 @@
-import type { DeepPartial } from "./types";
 
-export const assignNonNullish = <T extends object, U extends object>(source: T, mutation: U)  => {
+export const assignNonNullish = <T extends object, U extends object>(target: T, update: U)  => {
 
-	for (const key in mutation) {
+	for (const key in update) {
 
-		let next = mutation[key];
+		let next = update[key];
 		switch (typeof next) {
 
 			case 'string':
 				if (!next.length) continue;
+				target[key as unknown as keyof T] = next as T[keyof T];
 				break;
 
 			case 'number':
 				if (isNaN(next)) continue;
+				target[key as unknown as keyof T] = next as T[keyof T];
 				break;
 
 			case 'object':
+
 				if (next === null) continue;
-				if (!source[key]) source[key] = {};
-				assignNonNullish(source[key], next);
+
+				if (!target[key as unknown as keyof T])
+					target[key as unknown as keyof T] = {} as T[keyof T];
+
+				assignNonNullish(target[key as unknown as keyof T] as object, next);
 				break;
-			
-			case 'undefined': {
-				continue;
-			}
 
 			default:
 				break;
 		}
-
-		source[key] = next;
 	}
 
-	return source as T & U;
+	return target as T & U;
 };
 
 export const filterNullish = <T extends object>(object: T) => {
@@ -67,43 +66,6 @@ export const filterNullish = <T extends object>(object: T) => {
 	return object;
 };
 
-export const mergeNonNullish = <T>(target: DeepPartial<T>, mutation: DeepPartial<T>) => {
-
-	for (let prop in mutation) {
-
-		const next = mutation[prop];
-
-		if (!next) continue;
-
-		switch (typeof next) {
-
-			case 'string':
-				if (!next.length) continue;
-				break;
-
-			case 'number':
-				if (isNaN(next)) continue;
-				break;
-
-			case 'object':
-
-				if (!target[prop])
-					target[prop] = {};
-					
-				mergeNonNullish(target[prop], next);
-
-				break;
-		
-			default:
-				break;
-		}
-
-		target[prop] = next;
-	}
-
-	return target;
-};
-
 export const deepClone = <T extends object>(source: T) => {
 
 	if (typeof source !== 'object') return source;
@@ -115,4 +77,44 @@ export const deepClone = <T extends object>(source: T) => {
 	}
 
 	return result as T;
+};
+
+export function mergeNonNullish<T extends object, U extends object>(a: T, b: U) {
+
+	const target = {} as T;
+
+	for (let update of arguments) {
+
+		for (const key in update) {
+
+			let next = update[key];
+			switch (typeof next) {
+	
+				case 'string':
+					if (!next.length) continue;
+					target[key as unknown as keyof T] = next as T[keyof T];
+					break;
+	
+				case 'number':
+					if (isNaN(next)) continue;
+					target[key as unknown as keyof T] = next as T[keyof T];
+					break;
+	
+				case 'object':
+	
+					if (next === null) continue;
+	
+					if (!target[key as unknown as keyof T])
+						target[key as unknown as keyof T] = {} as T[keyof T];
+	
+					assignNonNullish(target[key as unknown as keyof T] as object, next);
+					break;
+	
+				default:
+					break;
+			}
+		}
+	};
+
+	return target as T & U;
 };
