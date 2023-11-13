@@ -18,10 +18,14 @@ export const mergeIfUpdated = (target: object, mutation: object) => {
 };
 
 export const deepClone = <T extends object>(source: T) => {
-	/*const result = (Array.isArray(source) ? [] : {});
+
+	if (typeof source !== 'object') return source;
+
+	const result = (Array.isArray(source) ? [] : {});
+	
 	for (let key in source) {
-		result[key] = deepClone(source[key]);
+		(result[key as keyof typeof result] as T) = deepClone(source[key as keyof typeof source] as T);
 	}
-	return result as T;*/
-	return JSON.parse(JSON.stringify(source)) as T;
+
+	return result as T;
 };
