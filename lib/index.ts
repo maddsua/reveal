@@ -60,8 +60,6 @@ export const revealInit = (container?: HTMLElement) => {
 		return { elem: item, params, inheritParams: childParams } as RevealItem;
 	});
 
-	console.log(revealItems);
-
 	const hideElement = async (elem: HTMLElement, trDirect: Direction, trAmount: number, animLen: number) => {
 		const dir = trDirect.slice(-1);
 		const sign = trDirect.length > 1 ? '-' : '';
