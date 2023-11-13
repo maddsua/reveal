@@ -76,14 +76,6 @@ export const revealInit = (container?: HTMLElement) => {
 		item.elem.style.transition = '';
 	};
 
-	const revealSequence = async (sequence: RevealParentElement) => {
-		sequence.children.forEach(async (child, index) => {
-			console.log('sleep for:', (child.params.index ?? index) * child.params.delay);
-			await asyncSleep((child.params.index ?? index) * child.params.delay);
-			await showElement(child);
-		});
-	};
-
 	const sequenceMap = new Map(parentItems.map(item => ([item.elem, item])));
 	const io = new IntersectionObserver(entries => {
 
@@ -96,7 +88,11 @@ export const revealInit = (container?: HTMLElement) => {
 			await asyncSleep(sequence.params.delay);
 			await showElement(sequence);
 
-			revealSequence(sequence);
+			sequence.children.forEach(async (child, index) => {
+				console.log('sleep for:', (child.params.index ?? index) * child.params.delay);
+				await asyncSleep((child.params.index ?? index) * child.params.delay);
+				await showElement(child);
+			});
 		});
 
 	}, { threshold: (Array.apply(0, Array(21)) as any[]).map((_item, index) => index * 0.05) });
