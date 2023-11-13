@@ -1,24 +1,3 @@
-/*
-	Prototype: data-rvl-container
-
-	data-rvl-container="[trigger-on-fraction] [block-delay] [item-delay]"
-	data-rvl-container="0.25 300ms 50ms"
-	data-rvl-container="f25 b300 i50"
-
-
-	Prototype: data-rvl
-
-	data-rvl="[translate-in-em's] [direction] [order] [delay] [transitionTime]"
-	data-rvl="2em left 5 200ms"
-	data-rvl="t2 dl o5 dy200 tt200"
-
-
-	Example:
-
-	<div data-rvl-container="f25 b300 i50">
-		<img data-rvl="t2 dl o5 d200" />
-	</div>
-*/
 
 import { AttributeParser, defaultElementParams } from "./attributeParser";
 import { mergeNonNullish } from "./objects";
