@@ -6,11 +6,8 @@ const styleDirectives = [
 
 export const injectStyles = () => {
 
-	if (typeof document !== 'object') {
-		throw new Error('document is inaccessible')
-	}
-
-
+	if (typeof document !== 'object') 
+		throw new Error('document global object is inaccessible')
 
 	const style = document.createElement('style');
 		style.id = 'reveal-v3-critical-styles';
