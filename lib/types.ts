@@ -27,16 +27,3 @@ export interface RevealParentElement extends RevealElement {
 	inheritParams: RevealParams;
 	children: RevealElement[];
 };
-
-export interface RevealItemOptions {
-	params: DeepPartial<RevealParams>;
-	inheritParams: DeepPartial<RevealParams>;
-}
-
-export interface RevealItem extends RevealItemOptions {
-	elem: HTMLElement;
-};
-
-export interface ParentRavealElement extends RevealItem {
-	children: RevealItem[];
-};
