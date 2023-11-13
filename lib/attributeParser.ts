@@ -1,5 +1,5 @@
-import { mergeIfUpdated, deepClone } from './objects';
-import type { Direction, RevealItemOptions, RevealParams } from './types';
+import { filterNullish } from './objects';
+import type { Direction, RevealItemOptions, RevealParams, DeepPartial } from './types';
 
 const translateDirectionMap: Record<string, Direction> = {
 	't': '-y',
@@ -19,58 +19,35 @@ export const defaultElementParams: RevealParams = {
 	index: 0
 };
 
-export default (attribute: string | null): RevealItemOptions => {
-
-	const applyOptions: RevealItemOptions = {
-		params: deepClone(defaultElementParams),
-		inheritParams: {
-			threshold: 0,
-			delay: 0,
-			length: 0,
-			translate: {
-				direction: null,
-				amountEm: 0
-			},
-			index: 0
-		}
-	};
+export const attributeParser = (attribute: string | null): DeepPartial<RevealItemOptions> => {
 
 	const directives = attribute?.toLowerCase()?.split(' ');
-	if (!directives?.length) return applyOptions;
+	if (!directives?.length) return {};
 
 	const getArg = (expr: RegExp) => directives.find(item => expr.test(item));
 
-	const providedOptions: RevealItemOptions = {
+	const getTranslate = (arg: string | undefined) => ({
+		amountEm: parseInt(arg?.slice(2) || ''),
+		direction: translateDirectionMap[arg?.[1] as string]
+	});
+
+	const providedOptions: DeepPartial<RevealItemOptions> = {
 		params: {
 			threshold: parseInt(getArg(/^t\d+$/)?.slice(1) as string),
 			delay: parseInt(getArg(/^d\d+$/)?.slice(1) as string),
 			length: parseInt(getArg(/^l\d+$/)?.slice(1) as string),
-			translate: (() => {
-				const arg_translate = getArg(/^t[rltb]\d*$/);
-				return {
-					amountEm: parseInt(arg_translate?.slice(2) as string),
-					direction: translateDirectionMap[arg_translate?.[1] || 'b']
-				}
-			})(),
+			translate: getTranslate(getArg(/^t[rltb]\d*$/)),
 			index: parseInt(getArg(/^i\d+$/)?.slice(1) as string)
 		},
 		inheritParams: {
 			threshold: parseInt(getArg(/^ct\d+$/)?.slice(2) as string),
 			delay: parseInt(getArg(/^cd\d+$/)?.slice(2) as string),
 			length: parseInt(getArg(/^cl\d+$/)?.slice(2) as string),
-			translate: (() => {
-				const arg_translate = getArg(/^ct[rltb]\d*$/);
-				return {
-					amountEm: parseInt(arg_translate?.slice(3) as string),
-					direction: translateDirectionMap[arg_translate?.[2] || 'b']
-				}
-			})(),
-			index: 0
+			translate: getTranslate(getArg(/^ct[rltb]\d*$/)),
 		}
 	};
 
-	mergeIfUpdated(applyOptions.params, providedOptions.params);
-	mergeIfUpdated(applyOptions.inheritParams, providedOptions.inheritParams);
-
-	return applyOptions;
+	return filterNullish(providedOptions);
 };
+
+export default attributeParser;

@@ -1,3 +1,8 @@
+
+export type DeepPartial<T> = T extends object ? {
+    [P in keyof T]?: DeepPartial<T[P]>;
+} : T;
+
 export type Direction = 'x' | '-x' | 'y' | '-y';
 
 export interface Translate {
@@ -13,17 +18,9 @@ export interface RevealParams {
 	index: number;				//	i5 - reveal order
 };
 
-export interface ChildTranslate extends Omit<Translate, 'direction'> {
-	direction: Direction | null;
-};
-
-export interface ChildRevealParams extends Omit<RevealParams, 'translate'> {
-	translate: ChildTranslate;
-};
-
 export interface RevealItemOptions {
-	params: RevealParams;
-	inheritParams: ChildRevealParams;
+	params: DeepPartial<RevealParams>;
+	inheritParams: DeepPartial<RevealParams>;
 }
 
 export interface RevealItem extends RevealItemOptions {
