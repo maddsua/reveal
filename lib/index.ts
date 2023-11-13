@@ -79,9 +79,8 @@ export const revealInit = (container?: HTMLElement) => {
 
 	const revealSequence = async (sequence: RevealParentElement) => {
 		sequence.children.forEach(async (child, index) => {
-			const childDelay = child.params.delay || sequence.inheritParams.delay || defaultElementParams.delay;
-			const childOrder = child.params.index < 2 ? index : child.params.index || 0;
-			await asyncSleep(childOrder * childDelay);
+			console.log('sleep for:', (child.params.index ?? index) * child.params.delay);
+			await asyncSleep((child.params.index ?? index) * child.params.delay);
 			await showElement(child);
 		});
 	};
@@ -93,12 +92,12 @@ export const revealInit = (container?: HTMLElement) => {
 
 			const sequence = sequenceMap.get(ioEntry.target as HTMLElement) as RevealParentElement;
 			if ((ioEntry.intersectionRatio * 100) < sequence.params.threshold) return;
+			io.unobserve(ioEntry.target);
 			
 			await asyncSleep(sequence.params.delay || defaultElementParams.delay);
-			revealSequence(sequence);
-
 			await showElement(sequence);
-			io.unobserve(ioEntry.target);
+
+			revealSequence(sequence);
 		});
 
 	}, { threshold: (Array.apply(0, Array(21)) as any[]).map((_item, index) => index * 0.05) });
