@@ -1,5 +1,4 @@
-import { filterNullish } from './objects';
-import type { Direction, RevealItemOptions, RevealParams, DeepPartial } from './types';
+import type { Direction, RevealParams, DeepPartial, Translate } from './types';
 
 const translateDirectionMap: Record<string, Direction> = {
 	't': '-y',
@@ -19,35 +18,59 @@ export const defaultElementParams: RevealParams = {
 	index: 0
 };
 
-export const attributeParser = (attribute: string | null): DeepPartial<RevealItemOptions> => {
+export class AttributeParser {
 
-	const directives = attribute?.toLowerCase()?.split(' ');
-	if (!directives?.length) return {};
+	attr: string[];
 
-	const getArg = (expr: RegExp) => directives.find(item => expr.test(item));
+	constructor(attribute: string | null) {
+		this.attr = attribute?.toLowerCase()?.split(' ') || [];
+	}
 
-	const getTranslate = (arg: string | undefined) => ({
-		amountEm: parseInt(arg?.slice(2) || ''),
-		direction: translateDirectionMap[arg?.[1] as string]
-	});
+	getArg(expr: RegExp) {
+		return this.attr.find(item => expr.test(item));
+	}
 
-	const providedOptions: DeepPartial<RevealItemOptions> = {
-		params: {
-			threshold: parseInt(getArg(/^t\d+$/)?.slice(1) as string),
-			delay: parseInt(getArg(/^d\d+$/)?.slice(1) as string),
-			length: parseInt(getArg(/^l\d+$/)?.slice(1) as string),
-			translate: getTranslate(getArg(/^t[rltb]\d*$/)),
-			index: parseInt(getArg(/^i\d+$/)?.slice(1) as string)
-		},
-		inheritParams: {
-			threshold: parseInt(getArg(/^ct\d+$/)?.slice(2) as string),
-			delay: parseInt(getArg(/^cd\d+$/)?.slice(2) as string),
-			length: parseInt(getArg(/^cl\d+$/)?.slice(2) as string),
-			translate: getTranslate(getArg(/^ct[rltb]\d*$/)),
-		}
-	};
+	getArgTranslate(expr: RegExp): Partial<Translate> | undefined {
 
-	return filterNullish(providedOptions);
+		const arg = this.getArg(expr);
+		if (!arg) return undefined;
+
+		const numval = parseInt(arg.slice(arg.startsWith('c') ? 3 : 2));
+
+		return {
+			amountEm: isNaN(numval) ? undefined : numval,
+			direction: translateDirectionMap[arg?.[1]]
+		};
+	}
+
+	getArgInt(expr: RegExp): number | undefined {
+
+		const arg = this.getArg(expr);
+		if (!arg) return undefined;
+
+		const numval = parseInt(arg.slice(arg.startsWith('c') ? 2 : 1));
+		if (isNaN(numval)) return undefined;
+
+		return numval;
+	}
+
+	parse(): DeepPartial<RevealParams> {
+		return {
+			threshold: this.getArgInt(/^t\d+$/),
+			delay: this.getArgInt(/^d\d+$/),
+			length: this.getArgInt(/^l\d+$/),
+			translate: this.getArgTranslate(/^t[rltb]\d*$/),
+			index: this.getArgInt(/^i\d+$/)
+		};
+	}
+
+	parseChildren(): DeepPartial<RevealParams> {
+		return {
+			threshold: this.getArgInt(/^ct\d+$/),
+			delay: this.getArgInt(/^cd\d+$/),
+			length: this.getArgInt(/^cl\d+$/),
+			translate: this.getArgTranslate(/^ct[rltb]\d*$/),
+			index: this.getArgInt(/^ci\d+$/)
+		};
+	}
 };
-
-export default attributeParser;
