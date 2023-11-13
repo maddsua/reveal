@@ -21,8 +21,8 @@ export const deepClone = <T extends object>(source: T) => {
 
 	if (typeof source !== 'object') return source;
 
-	const result = (Array.isArray(source) ? [] : {});
-	
+	const result = Array.isArray(source) ? [] : {};
+
 	for (let key in source) {
 		(result[key as keyof typeof result] as T) = deepClone(source[key as keyof typeof source] as T);
 	}
