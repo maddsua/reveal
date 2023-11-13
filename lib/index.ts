@@ -20,10 +20,10 @@
 	</div>
 */
 
-import { default as attributeParser, defaultElementParams } from "./attributeParser";
-import { deepClone, mergeNonNullish, filterNullish, assignNonNullish } from "./objects";
+import { AttributeParser, defaultElementParams } from "./attributeParser";
+import { deepClone,  filterNullish, assignNonNullish, mergeNonNullish } from "./objects";
 import { injectStyles } from "./styles";
-import type { RevealItem, ParentRavealElement, Direction, RevealParams, Translate } from "./types";
+import type { RevealItem, ParentRavealElement, Direction, RevealParams, Translate, RevealElement, RevealParentElement } from "./types";
 
 const asyncSleep = async (timeout: number) => new Promise(resolve => setTimeout(resolve, timeout));
 
@@ -43,23 +43,37 @@ export const revealInit = (container?: HTMLElement) => {
 	injectStyles();
 
 	//	find all reveal candidates
-	const revealItems = Array.from((container || document).querySelectorAll<HTMLElement>('[data-rvl]')).map(item => {
-		const { params, inheritParams } = attributeParser(item.getAttribute('data-rvl'));
-		return { elem: item, params, inheritParams } as RevealItem;
-	});
+	const revealItems = Array.from((container || document).querySelectorAll<HTMLElement>('[data-rvl]')).map(item => ({
+		element: item,
+		attributeParser: new AttributeParser(item.getAttribute('data-rvl'))
+	}));
 
 	//	sort 'em into parents and children
 	const childElementsSet = new Set(Array.from(document.querySelectorAll<HTMLElement>('[data-rvl] [data-rvl]')));
-	const childItems = revealItems.filter(parent => childElementsSet.has(parent.elem));
-	const parentItems: ParentRavealElement[] = revealItems.filter(parent => !childElementsSet.has(parent.elem)).map(parent => ({
-		elem: parent.elem,
-		params: parent.params,
-		inheritParams: parent.inheritParams,
-		children: childItems.filter(child => parent.elem.contains(child.elem))
-	}));
+	const childrenItems = revealItems.filter(item => childElementsSet.has(item.element));
+	const parentItems = revealItems.filter(item => !childElementsSet.has(item.element)).map(item => {
+
+		const params = mergeNonNullish(defaultElementParams, item.attributeParser.parse());
+
+		const inheritParams = mergeNonNullish(defaultElementParams, item.attributeParser.parseChildren());
+		const children = childrenItems.map(item => ({
+			elem: item.element,
+			params: mergeNonNullish(inheritParams, item.attributeParser.parse())
+		}));
+
+		return {
+			elem: item.element,
+			params,
+			inheritParams,
+			children
+		};
+	});
+
+	console.log(parentItems);
 
 	//	self explanatory
 	const hideElement = async (elem: HTMLElement, translate: Translate, animLen: number) => {
+
 		const dir = translate.direction.slice(-1);
 		const sign = translate.direction.length > 1 ? '-' : '';
 
@@ -69,32 +83,21 @@ export const revealInit = (container?: HTMLElement) => {
 		elem.style.transition = `all ${animLen}ms ease`;
 	};
 
-	parentItems.forEach(parent => {
-
-		const { translate, length } = assignNonNullish(parent.params, defaultElementParams);
-		console.log(translate);
-		hideElement(parent.elem, translate, length);
-
-		parent.children.forEach(child => {
-
-			let applyParams = assignNonNullish(defaultElementParams, assignNonNullish(parent.inheritParams, child.params));
-			console.log(applyParams);
-			const { translate, length } = applyParams;
-			hideElement(child.elem, translate, length);
+	parentItems.forEach(item => {
+		hideElement(item.elem, item.params.translate, item.params.length);
+		item.children.forEach(child => {
+			hideElement(child.elem, child.params.translate, child.params.length);
 		});
 	});
 
-	const sequenceMap = new Map(parentItems.map(item => ([item.elem, item])));
-
-	const showElement = async (item: RevealItem) => {
+	const showElement = async (item: RevealElement) => {
 		item.elem.style.transform = '';
 		item.elem.style.opacity = '';
 		await asyncSleep(item.params.length);
 		item.elem.style.transition = '';
 	};
 
-	const revealSequence = async (sequence: ParentRavealElement) => {
-
+	const revealSequence = async (sequence: RevealParentElement) => {
 		sequence.children.forEach(async (child, index) => {
 			const childDelay = child.params.delay || sequence.inheritParams.delay || defaultElementParams.delay;
 			const childOrder = child.params.index < 2 ? index : child.params.index || 0;
@@ -103,21 +106,19 @@ export const revealInit = (container?: HTMLElement) => {
 		});
 	};
 
+	const sequenceMap = new Map(parentItems.map(item => ([item.elem, item])));
 	const io = new IntersectionObserver(entries => {
 
 		entries.forEach(async (ioEntry) => {
 
-			const sequence = sequenceMap.get(ioEntry.target as HTMLElement) as ParentRavealElement;
+			const sequence = sequenceMap.get(ioEntry.target as HTMLElement) as RevealParentElement;
 			if ((ioEntry.intersectionRatio * 100) < sequence.params.threshold) return;
 			
 			await asyncSleep(sequence.params.delay || defaultElementParams.delay);
-
 			revealSequence(sequence);
 
 			await showElement(sequence);
-
 			io.unobserve(ioEntry.target);
-
 		});
 
 	}, { threshold: (Array.apply(0, Array(21)) as any[]).map((_item, index) => index * 0.05) });
