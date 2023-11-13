@@ -94,7 +94,7 @@ export const revealInit = (container?: HTMLElement) => {
 			if ((ioEntry.intersectionRatio * 100) < sequence.params.threshold) return;
 			io.unobserve(ioEntry.target);
 			
-			await asyncSleep(sequence.params.delay || defaultElementParams.delay);
+			await asyncSleep(sequence.params.delay);
 			await showElement(sequence);
 
 			revealSequence(sequence);
