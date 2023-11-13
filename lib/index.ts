@@ -34,8 +34,9 @@ export const revealInit = (container?: HTMLElement) => {
 
 		const params = mergeNonNullish(defaultElementParams, item.attributeParser.parse());
 		const inheritParams = mergeNonNullish(defaultElementParams, item.attributeParser.parseChildren());
+		const ownChildren = childrenItems.filter(child => item.element.contains(child.element));
 
-		const children = childrenItems.map(item => ({
+		const children = ownChildren.map(item => ({
 			elem: item.element,
 			params: mergeNonNullish(inheritParams, item.attributeParser.parse())
 		}));
@@ -89,8 +90,7 @@ export const revealInit = (container?: HTMLElement) => {
 			await showElement(sequence);
 
 			sequence.children.forEach(async (child, index) => {
-				console.log('sleep for:', (child.params.index ?? index) * child.params.delay);
-				await asyncSleep((child.params.index ?? index) * child.params.delay);
+				await asyncSleep((child.params.index || index) * child.params.delay);
 				await showElement(child);
 			});
 		});
