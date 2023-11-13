@@ -21,7 +21,6 @@
 */
 
 import { default as attributeParser, defaultElementParams } from "./attributeParser";
-
 import type { RevealItem, ParentRavealElement, Direction, RevealParams } from "./types";
 
 const asyncSleep = async (timeout: number) => new Promise(resolve => setTimeout(resolve, timeout));
