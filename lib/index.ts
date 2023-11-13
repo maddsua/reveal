@@ -21,7 +21,7 @@
 */
 
 import { AttributeParser, defaultElementParams } from "./attributeParser";
-import { deepClone,  filterNullish, assignNonNullish, mergeNonNullish } from "./objects";
+import { mergeNonNullish } from "./objects";
 import { injectStyles } from "./styles";
 import type { RevealItem, ParentRavealElement, Direction, RevealParams, Translate, RevealElement, RevealParentElement } from "./types";
 
