@@ -33,7 +33,6 @@ export const revealInit = (container?: HTMLElement) => {
 	const parentItems = revealItems.filter(item => !childElementsSet.has(item.element)).map(item => {
 
 		const params = mergeNonNullish(defaultElementParams, item.attributeParser.parse());
-
 		const inheritParams = mergeNonNullish(defaultElementParams, item.attributeParser.parseChildren());
 
 		const children = childrenItems.map(item => ({
