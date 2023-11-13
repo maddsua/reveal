@@ -18,6 +18,16 @@ export interface RevealParams {
 	index: number;				//	i5 - reveal order
 };
 
+export interface RevealElement {
+	elem: HTMLElement;
+	params: RevealParams;
+}
+
+export interface RevealParentElement extends RevealElement {
+	inheritParams: RevealParams;
+	children: RevealElement[];
+};
+
 export interface RevealItemOptions {
 	params: DeepPartial<RevealParams>;
 	inheritParams: DeepPartial<RevealParams>;
