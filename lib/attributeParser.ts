@@ -66,8 +66,7 @@ export class AttributeParser {
 			threshold: this.getArgInt(/^ct\d+$/),
 			delay: this.getArgInt(/^cd\d+$/),
 			length: this.getArgInt(/^cl\d+$/),
-			translate: this.getArgTranslate(/^ct[rltb]\d*$/),
-			index: this.getArgInt(/^ci\d+$/)
+			translate: this.getArgTranslate(/^ct[rltb]\d*$/)
 		};
 	}
 };
