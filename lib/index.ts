@@ -72,7 +72,6 @@ export const revealInit = (container?: HTMLElement) => {
 
 	const childElementsSet = new Set(Array.from(document.querySelectorAll<HTMLElement>('[data-rvl] [data-rvl]')));
 	const childItems = revealItems.filter(parent => childElementsSet.has(parent.elem));
-	console.log(childItems);
 	const parentItems: ParentRavealElement[] = revealItems.filter(parent => !childElementsSet.has(parent.elem)).map(parent => ({
 		elem: parent.elem,
 		params: parent.params,
