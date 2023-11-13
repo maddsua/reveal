@@ -23,7 +23,7 @@
 import { AttributeParser, defaultElementParams } from "./attributeParser";
 import { mergeNonNullish } from "./objects";
 import { injectStyles } from "./styles";
-import type { RevealItem, ParentRavealElement, Direction, RevealParams, Translate, RevealElement, RevealParentElement } from "./types";
+import type { Translate, RevealElement, RevealParentElement } from "./types";
 
 const asyncSleep = async (timeout: number) => new Promise(resolve => setTimeout(resolve, timeout));
 
