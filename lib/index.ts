@@ -21,26 +21,10 @@
 */
 
 import { default as attributeParser, defaultElementParams } from "./attributeParser";
+import { injectStyles } from "./styles";
 import type { RevealItem, ParentRavealElement, Direction, RevealParams } from "./types";
 
 const asyncSleep = async (timeout: number) => new Promise(resolve => setTimeout(resolve, timeout));
-
-const injectStyles = () => {
-
-	if (typeof document !== 'object') {
-		throw new Error('document is inaccessible')
-	}
-
-	const styleDirectives = [
-		'html, body {overflow-x: hidden}',
-		'* {box-sizing: border-box}'
-	];
-
-	const style = document.createElement('style');
-		style.id = 'reveal-v3-critical-styles';
-		style.innerHTML = styleDirectives.join('\n');
-	document.head.appendChild(style)
-};
 
 export const revealInit = (container?: HTMLElement) => {
 
