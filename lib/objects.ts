@@ -1,31 +1,35 @@
 
-export const mergeIfUpdated = (target: object, mutation: object) => {
+export function mergeNonNullish<T extends object, U extends object>(a: T, b: U) {
 
-	for (let prop in mutation) {
+	const target = {} as T;
 
-		const next = mutation[prop];
+	for (let update of arguments) {
 
-		if (typeof next === 'number' && isNaN(next))
-			continue;
-		else if (typeof next === 'string' && !next?.length)
-			continue;
-		else if (next === null)
-			continue;
-		else if (typeof next === 'object' && !Array.isArray(next))
-			mergeIfUpdated(target[prop], next);
-		else target[prop] = next;
-	}
-};
+		for (const key in update) {
 
-export const deepClone = <T extends object>(source: T) => {
+			let next = update[key];
+			switch (typeof next) {
+	
+				case 'string':
+					if (!next.length) continue;
+					target[key as unknown as keyof T] = next as T[keyof T];
+					break;
+	
+				case 'number':
+					if (isNaN(next)) continue;
+					target[key as unknown as keyof T] = next as T[keyof T];
+					break;
+	
+				case 'object':
+					if (next === null) continue;	
+					target[key as unknown as keyof T] = mergeNonNullish(target[key as unknown as keyof T] as object || {}, next);
+					break;
+	
+				default:
+					break;
+			}
+		}
+	};
 
-	if (typeof source !== 'object') return source;
-
-	const result = Array.isArray(source) ? [] : {};
-
-	for (let key in source) {
-		(result[key as keyof typeof result] as T) = deepClone(source[key as keyof typeof source] as T);
-	}
-
-	return result as T;
+	return target as T & U;
 };

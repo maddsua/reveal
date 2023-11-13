@@ -2,12 +2,12 @@
 
 Code examples:
 ```html
-<div data-rvl="t25 c50">
-	<div data-rvl="tt2 i2 l250">Shows third</div>
-	<div data-rvl="tr2 i0 l250">Shows first</div>
-	<div data-rvl="tb2 i1 l250">Shows second</div>
+<div data-rvl="t25 d250 cd500">
+	<div data-rvl="tt2 i2">Shows third</div>
+	<div data-rvl="tr2 i0">Shows first</div>
+	<div data-rvl="tb2 i1">Shows second</div>
 </div>
-<div data-rvl="t25 tt2 i8 l250">Reveals on itself from top on 25% visible</div>
+<div data-rvl="t25 tr2">Reveals from 2em right from top on 25% visible</div>
 ```
 
 Short-tags are:
@@ -26,3 +26,4 @@ Short-tags are:
 - trigger threshold: `t[number]`
 - default children elements animation delay: `cd[number]`
 - default children elements animation length: `cl[number]`
+- default children elements transition: `ct[direction][number]`

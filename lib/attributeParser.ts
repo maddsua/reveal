@@ -1,5 +1,4 @@
-import { mergeIfUpdated, deepClone } from './objects';
-import type { Direction, RevealItemOptions, RevealParams } from './types';
+import type { Direction, RevealParams, DeepPartial, Translate } from './types';
 
 const translateDirectionMap: Record<string, Direction> = {
 	't': '-y',
@@ -12,65 +11,62 @@ export const defaultElementParams: RevealParams = {
 	threshold: 25,
 	delay: 125,
 	length: 250,
-	translate: {
-		direction: 'x',
-		amountEm: 2
-	},
 	index: 0
 };
 
-export default (attribute: string | null): RevealItemOptions => {
+export class AttributeParser {
 
-	const applyOptions: RevealItemOptions = {
-		params: deepClone(defaultElementParams),
-		inheritParams: {
-			threshold: 0,
-			delay: 0,
-			length: 0,
-			translate: {
-				direction: null,
-				amountEm: 0
-			},
-			index: 0
-		}
-	};
+	attr: string[];
 
-	const directives = attribute?.toLowerCase()?.split(' ');
-	if (!directives?.length) return applyOptions;
+	constructor(attribute: string | null) {
+		this.attr = attribute?.toLowerCase()?.split(' ') || [];
+	}
 
-	const getArg = (expr: RegExp) => directives.find(item => expr.test(item));
+	getArg(expr: RegExp) {
+		return this.attr.find(item => expr.test(item));
+	}
 
-	const providedOptions: RevealItemOptions = {
-		params: {
-			threshold: parseInt(getArg(/^t\d+$/)?.slice(1) as string),
-			delay: parseInt(getArg(/^d\d+$/)?.slice(1) as string),
-			length: parseInt(getArg(/^l\d+$/)?.slice(1) as string),
-			translate: (() => {
-				const arg_translate = getArg(/^t[rltb]\d*$/);
-				return {
-					amountEm: parseInt(arg_translate?.slice(2) as string),
-					direction: translateDirectionMap[arg_translate?.[1] || 'b']
-				}
-			})(),
-			index: parseInt(getArg(/^i\d+$/)?.slice(1) as string)
-		},
-		inheritParams: {
-			threshold: parseInt(getArg(/^ct\d+$/)?.slice(2) as string),
-			delay: parseInt(getArg(/^cd\d+$/)?.slice(2) as string),
-			length: parseInt(getArg(/^cl\d+$/)?.slice(2) as string),
-			translate: (() => {
-				const arg_translate = getArg(/^ct[rltb]\d*$/);
-				return {
-					amountEm: parseInt(arg_translate?.slice(3) as string),
-					direction: translateDirectionMap[arg_translate?.[2] || 'b']
-				}
-			})(),
-			index: 0
-		}
-	};
+	getArgTranslate(expr: RegExp): Partial<Translate> | undefined {
 
-	mergeIfUpdated(applyOptions.params, providedOptions.params);
-	mergeIfUpdated(applyOptions.inheritParams, providedOptions.inheritParams);
+		const arg = this.getArg(expr);
+		if (!arg) return undefined;
 
-	return applyOptions;
+		const isCp = arg.startsWith('c');
+		const numval = parseInt(arg.slice(isCp ? 3 : 2));
+
+		return {
+			amountEm: isNaN(numval) ? undefined : numval,
+			direction: translateDirectionMap[isCp ? arg[2] : arg[1]]
+		};
+	}
+
+	getArgInt(expr: RegExp): number | undefined {
+
+		const arg = this.getArg(expr);
+		if (!arg) return undefined;
+
+		const numval = parseInt(arg.slice(arg.startsWith('c') ? 2 : 1));
+		if (isNaN(numval)) return undefined;
+
+		return numval;
+	}
+
+	parse(): DeepPartial<RevealParams> {
+		return {
+			threshold: this.getArgInt(/^t\d+$/),
+			delay: this.getArgInt(/^d\d+$/),
+			length: this.getArgInt(/^l\d+$/),
+			translate: this.getArgTranslate(/^t[rltb]\d*$/),
+			index: this.getArgInt(/^i\d+$/)
+		};
+	}
+
+	parseChildren(): DeepPartial<RevealParams> {
+		return {
+			threshold: this.getArgInt(/^ct\d+$/),
+			delay: this.getArgInt(/^cd\d+$/),
+			length: this.getArgInt(/^cl\d+$/),
+			translate: this.getArgTranslate(/^ct[rltb]\d*$/)
+		};
+	}
 };
