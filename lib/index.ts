@@ -56,8 +56,8 @@ export const revealInit = (container?: HTMLElement) => {
 	injectStyles();
 
 	const revealItems = Array.from((container || document).querySelectorAll<HTMLElement>('[data-rvl]')).map(item => {
-		const { params, inheritParams: childParams } = attributeParser(item.getAttribute('data-rvl'));
-		return { elem: item, params, inheritParams: childParams } as RevealItem;
+		const { params, inheritParams } = attributeParser(item.getAttribute('data-rvl'));
+		return { elem: item, params, inheritParams } as RevealItem;
 	});
 
 	const hideElement = async (elem: HTMLElement, trDirect: Direction, trAmount: number, animLen: number) => {
