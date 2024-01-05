@@ -1,3 +1,5 @@
+⚠ Moved to: <https://github.com/maddsua/mws-packages/tree/main/packages/reveal>
+
 # This package impements html element reveal animations
 
 Code examples:
